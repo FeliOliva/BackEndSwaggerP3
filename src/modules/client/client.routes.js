@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/api/client", async (req, res) => {
   // #swagger.tags = ['Cliente']
   try {
-    params = JSON.parse(req.headers["params"]);
+    const params = JSON.parse(req.headers["params"]);
 
     let paginated = await clientService.paginated(params);
     return res.status(200).send(paginated);

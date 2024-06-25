@@ -4,18 +4,25 @@ const pager = require("../../utils/pager");
 async function createIfNotExists(decoded, response) {
   let client = await findOne(decoded.username);
   if (!client) {
-    client = { username: decoded.username, password: decoded.password };
+    client = {
+      username: decoded.username,
+      password: decoded.password,
+      user: decoded.userId,
+    };
     await save(client);
   }
   return client;
 }
 
 async function findOneById(_id) {
-  return await clientModel.findById(_id).exec();
+  return await clientModel.findById(_id).populate("user").exec();
 }
 
 async function findOne(username) {
-  return await clientModel.findOne({ username: username }).exec();
+  return await clientModel
+    .findOne({ username: username })
+    .populate("user")
+    .exec();
 }
 
 async function save(client) {
@@ -35,6 +42,7 @@ async function paginated(params) {
     .limit(perPage)
     .skip(perPage * page)
     .sort(sort)
+    .populate("user")
     .exec();
 
   return pager.createPager(page, data, count, perPage);
@@ -43,6 +51,7 @@ async function paginated(params) {
 async function update(id, updatedClient) {
   return await clientModel
     .findByIdAndUpdate(id, updatedClient, { new: true })
+    .populate("user")
     .exec();
 }
 
